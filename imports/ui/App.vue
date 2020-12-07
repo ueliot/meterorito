@@ -2,6 +2,14 @@
   <div className="container">
     <header>
       <h1>Todo List</h1>
+      <form className="new-task" @submit.prevent="handleSubmit">
+        <input
+          type="text"
+          placeholder="Type to add new tasks"
+          v-model="newTask"
+        />
+      </form>
+
     </header>
     <ul>
       <Task
@@ -23,12 +31,24 @@ export default {
     Task
   },
   data() {
-    return {};
+    return {
+      newTask: ""
+    };
   },
-  methods: {},
+  methods: {
+    handleSubmit(event) {
+      Tasks.insert({
+        text: this.newTask,
+        createdAt: new Date() // current time
+      });
+ 
+      // Clear form
+      this.newTask = "";
+    }
+  },
   meteor: {
     tasks() {
-      return Tasks.find({}).fetch();
+      return Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
     }
   }  
 };
