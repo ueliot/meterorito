@@ -1,7 +1,19 @@
 <template>
   <div className="container">
     <header>
-      <h1>Todo List</h1>
+      <h1>Todo List ({{ incompleteCount }})</h1>
+
+      <label className="hide-completed">
+        <input
+          type="checkbox"
+          readOnly
+          checked="hideCompleted"
+          v-model="hideCompleted"
+          @click="toggleHideCompleted"
+        />
+        Hide Completed Tasks
+      </label>
+
       <form className="new-task" @submit.prevent="handleSubmit">
         <input
           type="text"
@@ -32,7 +44,8 @@ export default {
   },
   data() {
     return {
-      newTask: ""
+      newTask: "",
+      hideCompleted: false
     };
   },
   methods: {
@@ -44,11 +57,21 @@ export default {
  
       // Clear form
       this.newTask = "";
+    },
+    toggleHideCompleted() {
+      this.hideCompleted = !this.hideCompleted;
     }
   },
   meteor: {
     tasks() {
-      return Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
+      let filteredTasks = Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
+      if (this.hideCompleted) {
+        filteredTasks = filteredTasks.filter(task => !task.checked);
+      }
+      return filteredTasks;
+    },
+    incompleteCount() {
+      return Tasks.find({ checked: { $ne: true } }).count();
     }
   }  
 };
