@@ -10,6 +10,12 @@
       v-bind:checked="!!this.task.checked"
       @click="toggleChecked"
     />
+
+    <template v-if="this.showPrivateButton">
+      <button className="toggle-private" @click="togglePrivate">
+        {{ this.task.private ? "Private" : "Public" }}
+      </button>
+    </template>
  
     <span class="text"><strong>{{ this.task.username }}</strong>:{{ this.task.text }}</span>
   </li>
@@ -17,15 +23,19 @@
  
 <script>
 import { Tasks } from "../api/tasks.js";
+import classnames from "classnames";
  
 export default {
-  props: ["task"],
+  props: ["task", "showPrivateButton"],
   data() {
     return {};
   },
   computed: {
     taskClassName: function() {
-      return this.task.checked ? "checked" : "";
+     return classnames({
+        checked: this.task.checked,
+        private: this.task.private
+      });
     }
   },
   methods: {
@@ -35,6 +45,9 @@ export default {
     },
     deleteThisTask() {
        Meteor.call("tasks.remove", this.task._id);
+    },
+    togglePrivate() {
+      Meteor.call("tasks.setPrivate", this.task._id, !this.task.private);
     }
   }
 };

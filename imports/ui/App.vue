@@ -30,6 +30,7 @@
         v-for="task in tasks"
         v-bind:key="task._id"
         v-bind:task="task"
+        v-bind:showPrivateButton="showPrivateButton(task)"
       />
     </ul>
   </div>
@@ -61,9 +62,17 @@ export default {
     },
     toggleHideCompleted() {
       this.hideCompleted = !this.hideCompleted;
+    },
+    showPrivateButton(task) {
+      const currentUserId = this.currentUser?._id;
+      return task.owner === currentUserId;
     }
   },
   meteor: {
+    $subscribe: {
+      // Subscribes to the 'threads' publication with no parameters
+      tasks: []
+    },
     tasks() {
       let filteredTasks = Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
       if (this.hideCompleted) {
