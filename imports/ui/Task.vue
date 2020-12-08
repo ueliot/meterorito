@@ -11,7 +11,7 @@
       @click="toggleChecked"
     />
  
-    <span class="text">{{ this.task.text }}</span>
+    <span class="text"><strong>{{ this.task.username }}</strong>:{{ this.task.text }}</span>
   </li>
 </template>
  
